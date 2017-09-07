@@ -48,7 +48,6 @@ for i in range(1, n):
     print btemp
     v[i] = (b_[i] - a[i]*v[i-1])/btemp
 
-
 for i in range(n-1, 0):
     v[i] = v[i] - temp[i+1]*v[i+1]
 
