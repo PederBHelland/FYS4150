@@ -11,7 +11,7 @@ using namespace arma;
 
 int main()
 {
-    int n = 10000000, i;
+    int n = 100, i;
     double h = 1./(n+1);
     vec x(n), temp(n), f(n), b_(n), u(n), v(n);
 
@@ -35,6 +35,7 @@ int main()
 
     for(i=n-1 ; i >= 1 ; i--){
         v[i] -= temp[i+1]*v[i+1];
+        cout << u[i] << ' ' << v[i] << '\n';
     }
 
     t = clock()-t;
