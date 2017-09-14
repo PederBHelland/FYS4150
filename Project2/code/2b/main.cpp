@@ -14,6 +14,7 @@ int main()
     int n = 1000, i;
     mat A = zeros<mat>(n,n);
     vec V =  ;
+    double t = -tau +- sqrt(1+power(tau,2));
 
     for(i = 1; i< n-1; i++){
         A(i,i-1) = -1./power(hbar,2);
