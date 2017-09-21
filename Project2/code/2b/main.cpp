@@ -12,7 +12,7 @@ using namespace arma;
 
 int main()
 {
-    int N = 100, i, j, k, l;
+    int N = 5, i, j, k, l;
     double tau;
     double theta;
     mat A = zeros<mat>(N,N);
