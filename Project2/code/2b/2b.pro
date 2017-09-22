@@ -6,3 +6,6 @@ CONFIG -= qt
 SOURCES += main.cpp
 INCLUDEPATH += /usr/local/include
 LIBS += -L/usr/local/lib -larmadillo -llapack -lblas
+
+HEADERS += \
+    ../catch.hpp
