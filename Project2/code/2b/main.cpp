@@ -6,8 +6,6 @@
 #include "time.h"
 #include <iomanip>
 #include <algorithm>
-
-
 #define CATCH_CONFIG_RUNNER
 #include "../catch.hpp"
 
@@ -17,56 +15,12 @@ using namespace arma;
 unsigned int Factorial( unsigned int number ) {
     return number <= 1 ? number : Factorial(number-1)*number;
 }
-TEST_CASE( "Factorials are computed", "[factorial]" ) {
-    REQUIRE( Factorial(1) == 1 );
-    REQUIRE( Factorial(2) == 2 );
-    REQUIRE( Factorial(3) == 6 );
-    REQUIRE( Factorial(10) == 3628800 );
+TEST_CASE( "Eigenvalues are correct", "[eigenvalues]" ) {
+    REQUIRE( eigenvalues() == 1 );
 }
 
-
-int main()
+mat Jacobi_rotation(mat A, mat B, int N, int k, int l, double tau, double t, double c, double s, int i, int counter_zero_elements, int number_of_elements_over_diagonal, int u, int v, mat A_original, double eps)
 {
-    int dumb = 0;
-    char* dumb1[1];
-    int result = Catch::Session().run(dumb, dumb1);
-
-    int N = 4, i, j, k, l, x, counter_zero_elements, u, v;
-    int M = 100; //number of times we do the algorithm
-    int number_of_elements_over_diagonal;
-    double tau;
-    double theta;
-    mat A = zeros<mat>(N,N);
-    mat B = zeros<mat>(N,N);
-    mat A_original = zeros<mat>(N,N);
-    vec rho(N), V(N);
-
-    double t, c, s; //tan, cos, sin
-
-    double eps = pow(10, -7); //we want all the elements to be lower than this
-    double rho_min = 0;
-    double rho_max = 5; //run program with different values
-    double h = (rho_max-rho_min)/N;
-
-    for(i = 1; i<N+1; i++){
-        rho(i-1) = rho_min + i*h;
-        V(i-1) = pow(rho(i-1),2);
-    }
-
-    for(i = 1; i< N-1; i++){
-        A(i,i-1) = -1./pow(h,2);
-        A(i,i) = 2./pow(h,2) + V(i);
-        A(i,i+1) = -1./pow(h,2);
-    }
-
-    A(0,0) = 2./pow(h,2) + V(0);
-    A(N-1,N-1) = 2./pow(h,2) + V(N-1);
-    A(0,1) = A(N-1,N-2) = -1./pow(h,2);
-    A_original = A;
-
-    B=A;
-    x = 0;
-
     //for(x = 0; x < M; x++){
     while(1){
         for(k = 0; k < N; k++){
@@ -125,6 +79,67 @@ int main()
     }
 
     theEnd:
-        cout << A_original << " \n" << B;
+        cout << A_original << " \n" << A;
         cout << "";
+
+    return A;
+}
+
+vec eigenvalues(mat A, mat B, int N, int k, int l, double tau, double t, double c, double s, int i, int counter_zero_elements, int number_of_elements_over_diagonal, int u, int v, mat A_original, double eps)
+{
+    A = Jacobi_rotation(A, B, N, k, l, tau, t, c, s, i, counter_zero_elements, number_of_elements_over_diagonal, u, v, A_original, eps);
+    vec eig(N);
+    for(int i=0; i < N; i++){
+        for(int j=0; j < N; j++){
+            if(i == j){
+                eig(i) = A(i,j);
+            }
+        }
+    }
+    return eig;
+}
+
+int main()
+{
+    int dumb = 0;
+    char* dumb1[1];
+    int result = Catch::Session().run(dumb, dumb1);
+
+    int i, j, k, l, x, counter_zero_elements, u, v;
+    int number_of_elements_over_diagonal;
+    double tau;
+    double theta;
+    int N=4, M=100;
+    double rho_min = 0;
+    double rho_max = 5;
+    double eps = 0.0000001;
+
+    mat A = zeros<mat>(N,N);
+    mat B = zeros<mat>(N,N);
+    mat A_original = zeros<mat>(N,N);
+    vec rho(N), V(N), eig(N);
+
+    double t, c, s; //tan, cos, sin
+
+    double h = (rho_max-rho_min)/N;
+
+    for(i = 1; i<N+1; i++){
+        rho(i-1) = rho_min + i*h;
+        V(i-1) = pow(rho(i-1),2);
+    }
+
+    for(i = 1; i< N-1; i++){
+        A(i,i-1) = -1./pow(h,2);
+        A(i,i) = 2./pow(h,2) + V(i);
+        A(i,i+1) = -1./pow(h,2);
+    }
+
+    A(0,0) = 2./pow(h,2) + V(0);
+    A(N-1,N-1) = 2./pow(h,2) + V(N-1);
+    A(0,1) = A(N-1,N-2) = -1./pow(h,2);
+    A_original = A;
+
+    B=A;
+    eig = eigenvalues(A, B, N, k, l, tau, t, c, s, i, counter_zero_elements, number_of_elements_over_diagonal, u, v, A_original, eps);
+    //cout << " \n \n" << eig;
 }
