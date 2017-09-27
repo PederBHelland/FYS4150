@@ -30,19 +30,19 @@ mat Jacobi_rotation(mat A, mat B, int N, int k, int l, double tau, double t, dou
                     tau = (A(l,l) - A(k, k))/(2.*A(k, l));
                     //cout << tau << "   ";
                     if(tau > 0){ //choose smallest absolute value of t
-                        t = -tau + sqrt(1+pow(tau,2));
+                        t = -tau + sqrt(1+(tau*tau));
                     }
                     else {
-                        t = -tau - sqrt(1+pow(tau,2));
+                        t = -tau - sqrt(1+(tau*tau));
                        // cout << t;
                     }
-                    c = 1./(sqrt(1+pow(t,2)));
+                    c = 1./(sqrt(1+(t*t)));
                     s = t*c;
 
                     //Change the elements
-                    B(k,k) = A(k,k)*pow(c,2) - 2*A(k,l)*c*s + A(l,l)*pow(s,2);
-                    B(l,l) = A(l,l)*pow(c,2) + 2*A(k,l)*c*s + A(k,k)*pow(s,2);
-                    B(k,l) = (A(k,k)-A(l,l))*c*s + A(k,l)*(pow(c,2)-pow(s,2));
+                    B(k,k) = A(k,k)*(c*c) - 2*A(k,l)*c*s + A(l,l)*(s*s);
+                    B(l,l) = A(l,l)*(c*c) + 2*A(k,l)*c*s + A(k,k)*(s*s);
+                    B(k,l) = (A(k,k)-A(l,l))*c*s + A(k,l)*((c*c)-(s*s));
                     B(l,k) = B(k,l);
 
                     for(i = 0; i < N; i++){
