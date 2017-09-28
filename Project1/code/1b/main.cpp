@@ -11,7 +11,7 @@ using namespace arma;
 
 int main()
 {
-    int n = 1000000000, i;
+    int n = 1000, i;
     int flops;
     double h = 1./(n+1);
     vec x(n), temp(n), f(n), b_tilde(n), u(n), v(n);
