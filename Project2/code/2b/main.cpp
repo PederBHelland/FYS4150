@@ -13,9 +13,18 @@
 using namespace std;
 using namespace arma;
 
-mat Jacobi_rotation(mat A, mat B, int N, int k, int l, double tau, double t, double c, double s, int i, int counter_zero_elements, int number_of_elements_over_diagonal, int u, int v, mat A_original, double eps)
+mat Jacobi_rotation(mat A, mat B, int N, int k, int l, double tau, double t, double c, double s, int i, int counter_zero_elements, int number_of_elements_over_diagonal, int u, int v, mat A_original, double eps, int j, mat &R)
 {
     //for(x = 0; x < M; x++){
+    /*for(j=0; j< N; j++){
+        if(i == j){
+            R(i,j) = 1.0;
+        }
+        else{
+            R(i,j) = 0.0;
+        }
+    }*/
+    R = eye(N,N);
     while(1){
         for(k = 0; k < N; k++){
             for(l = k+1; l < N; l++){
@@ -47,6 +56,10 @@ mat Jacobi_rotation(mat A, mat B, int N, int k, int l, double tau, double t, dou
                             B(k,i) = A(i,k)*c - A(i,l)*s;
                             B(l,i) = A(i,l)*c + A(i,k)*s;
                         }
+                        double r_ik = R(i,k);
+                        double r_il = R(i,l);
+                        R(i,k) = c*r_ik - s*r_il;
+                        R(i,l) = c*r_il + s*r_ik;
                     }
 
                     A=B;
@@ -75,13 +88,13 @@ mat Jacobi_rotation(mat A, mat B, int N, int k, int l, double tau, double t, dou
 theEnd:
     //cout << A_original << " \n" << A;
     cout << "";
-
     return A;
+
 }
 
-vec eigenvalues(mat A, mat B, int N, int k, int l, double tau, double t, double c, double s, int i, int counter_zero_elements, int number_of_elements_over_diagonal, int u, int v, mat A_original, double eps)
+vec eigenvalues(mat A, mat B, int N, int k, int l, double tau, double t, double c, double s, int i, int counter_zero_elements, int number_of_elements_over_diagonal, int u, int v, mat A_original, double eps, int j, mat R)
 {
-    A = Jacobi_rotation(A, B, N, k, l, tau, t, c, s, i, counter_zero_elements, number_of_elements_over_diagonal, u, v, A_original, eps);
+    A = Jacobi_rotation(A, B, N, k, l, tau, t, c, s, i, counter_zero_elements, number_of_elements_over_diagonal, u, v, A_original, eps, j, R);
     vec eig(N);
     for(int i=0; i < N; i++){
         for(int j=0; j < N; j++){
@@ -93,6 +106,7 @@ vec eigenvalues(mat A, mat B, int N, int k, int l, double tau, double t, double 
     return eig;
 }
 
+/*
 vec eigenvectors(mat A, mat B, int N, int k, int l, double tau, double t, double c, double s, int i, int counter_zero_elements, int number_of_elements_over_diagonal, int u, int v, mat A_original, double eps, vec eig, vec eig_vec)
 {
     A = Jacobi_rotation(A, B, N, k, l, tau, t, c, s, i, counter_zero_elements, number_of_elements_over_diagonal, u, v, A_original, eps);
@@ -102,7 +116,7 @@ vec eigenvectors(mat A, mat B, int N, int k, int l, double tau, double t, double
     }
     //}
     return eig_vec;
-}
+}*/
 
 vec setup(int N, int M, double rho_max, double eps, string potential, double w_r=0) {
     int i, j, k, l, x, counter_zero_elements, u, v;
@@ -115,6 +129,7 @@ vec setup(int N, int M, double rho_max, double eps, string potential, double w_r
     mat A = zeros<mat>(N,N);
     mat B = zeros<mat>(N,N);
     mat A_original = zeros<mat>(N,N);
+    mat R = zeros<mat>(N,N);
     vec rho(N), V(N), eig(N), eig_vec(N);
 
     double t, c, s; //tan, cos, sin
@@ -143,9 +158,11 @@ vec setup(int N, int M, double rho_max, double eps, string potential, double w_r
     A_original = A;
 
     B=A;
-    eig = eigenvalues(A, B, N, k, l, tau, t, c, s, i, counter_zero_elements, number_of_elements_over_diagonal, u, v, A_original, eps);
-    eig_vec = eigenvectors(A, B, N, k, l, tau, t, c, s, i, counter_zero_elements, number_of_elements_over_diagonal, u, v, A_original, eps, eig, eig_vec);
-    cout << eig_vec;
+    eig = eigenvalues(A, B, N, k, l, tau, t, c, s, i, counter_zero_elements, number_of_elements_over_diagonal, u, v, A_original, eps, j, R);
+    //eig_vec = eigenvectors(A, B, N, k, l, tau, t, c, s, i, counter_zero_elements, number_of_elements_over_diagonal, u, v, A_original, eps, eig, eig_vec);
+
+
+    //cout << eig_vec;
     return eig;
 }
 
@@ -173,4 +190,45 @@ TEST_CASE( "Eigenvalues are correct", "[eigenvalues]" ) {
 }
 
 
+/*
+void setup(int N, double rho_max, mat& A, mat& R) {
+    // construct A, R
+}
 
+int rotate(double eps, mat& A, mat& R) {
+    // rotate
+    // A is diagonal
+    // R is eigenvec
+    int num_iterations;
+    return num_interations;
+}
+
+vec lowestEigenvaluesEigenvectors(int M, mat& A, mat& R) {
+    // sort A
+    // sort R accoding to A
+    //bruk sort(A) og sort_index(A). Sort_index(A) gir array som svarer til posisjonene til tilsvarende egenvektorer i matrisen R
+    vec lowestMeigenvalues; // vector of the M lowest eigenvalues
+    return lowestMeigenvalues;
+}
+
+int main () {
+    mat A;
+    mat R;
+    setup(10,5,A,R);
+    int rotations = rotate(1e-8, A, R);
+    vec lowestMeigenvalues = lowestEigenvaluesEigenvectors(3,A,R);
+    cout << lowestMeigenvalues << endl;
+}
+
+
+TEST_CASE("hei") {
+    mat A;
+    mat R;
+    setup(4,10,A,R);
+    int rotations = rotate(1e-8, A, R);
+    vec lowestMeigenvalues = lowestEigenvaluesEigenvectors(3,A,R);
+    REQUIRE(arma::dot(R(:,0), R(:,0) == Approx(1)));
+    REQUIRE(arma::dot(R(:,0), R(:,1) == Approx(0)));
+    REQUIRE(lowestMeigenvalues(0) == Approx(3.938768375));
+}
+*/
