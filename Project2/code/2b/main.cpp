@@ -8,22 +8,12 @@
 #include <algorithm>
 #define CATCH_CONFIG_RUNNER
 #include "../catch.hpp"
-//#include <list>
 
 using namespace std;
 using namespace arma;
 
 mat Jacobi_rotation(mat A, mat B, int N, int k, int l, double tau, double t, double c, double s, int i, int counter_zero_elements, int number_of_elements_over_diagonal, int u, int v, mat A_original, double eps, int j, mat &R)
 {
-    //for(x = 0; x < M; x++){
-    /*for(j=0; j< N; j++){
-        if(i == j){
-            R(i,j) = 1.0;
-        }
-        else{
-            R(i,j) = 0.0;
-        }
-    }*/
     R = eye(N,N);
     while(1){
         for(k = 0; k < N; k++){
@@ -106,22 +96,9 @@ vec eigenvalues(mat A, mat B, int N, int k, int l, double tau, double t, double 
     return eig;
 }
 
-/*
-vec eigenvectors(mat A, mat B, int N, int k, int l, double tau, double t, double c, double s, int i, int counter_zero_elements, int number_of_elements_over_diagonal, int u, int v, mat A_original, double eps, vec eig, vec eig_vec)
-{
-    A = Jacobi_rotation(A, B, N, k, l, tau, t, c, s, i, counter_zero_elements, number_of_elements_over_diagonal, u, v, A_original, eps);
-//for(int i=0; i <N ; i++){
-    if (N== 3){
-        eig_vec = {-(A(0,2)*A(1,0) + A(1,2)*(eig(0) - A(0,0)))/(A(0,1)*A(1,0) + (A(1,1)-eig(0))*(eig(0)-A(0,0))),A(0,2)/(eig(0) -A(0,0))-(A(0,1)*(A(0,2)*A(1,0) + A(1,2)*(eig(0) - A(0,0))))/((eig(0)-A(0,0))*(A(0,1)*A(1,0) + (A(1,1)-eig(0))*(eig(0)-A(0,0)))), 1};
-    }
-    //}
-    return eig_vec;
-}*/
-
 vec setup(int N, int M, double rho_max, double eps, string potential, double w_r=0) {
     int i, j, k, l, x, counter_zero_elements, u, v;
     int number_of_elements_over_diagonal;
-    //int  N=4, M=100;
     double tau;
     double theta;
     double rho_min = 0;
@@ -159,14 +136,43 @@ vec setup(int N, int M, double rho_max, double eps, string potential, double w_r
 
     B=A;
     eig = eigenvalues(A, B, N, k, l, tau, t, c, s, i, counter_zero_elements, number_of_elements_over_diagonal, u, v, A_original, eps, j, R);
-    //eig_vec = eigenvectors(A, B, N, k, l, tau, t, c, s, i, counter_zero_elements, number_of_elements_over_diagonal, u, v, A_original, eps, eig, eig_vec);
 
-
-    //cout << eig_vec;
     return eig;
 }
 
 
+// int main og test eigenvalue skal staa her
+
+
+void setup(int N, double rho_max, mat& A, mat& R) {
+    // construct A, R
+}
+
+int rotate(double eps, mat& A, mat& R) {
+    // rotate
+    // A is diagonal
+    // R is eigenvec
+    int num_iterations;
+    return num_iterations;
+}
+
+vec lowestEigenvaluesEigenvectors(int M, mat& A, mat& R) {
+    // sort A
+    // sort R accoding to A
+    //bruk sort(A) og sort_index(A). Sort_index(A) gir array som svarer til posisjonene til tilsvarende egenvektorer i matrisen R
+    vec lowestMeigenvalues; // vector of the M lowest eigenvalues
+    return lowestMeigenvalues;
+}
+/*
+int main() {
+    mat A;
+    mat R;
+    setup(10,5,A,R);
+    int rotations = rotate(1e-8, A, R);
+    vec lowestMeigenvalues = lowestEigenvaluesEigenvectors(3,A,R);
+    cout << lowestMeigenvalues << endl;
+}
+*/
 int main(int argc, char* argv[]) {
     int dumb = 0;
     char* dumb1[1];
@@ -180,6 +186,18 @@ int main(int argc, char* argv[]) {
     //    cout << "The eigenvalues in the interaction case are:" << endl << eig << endl;
     //}
 
+    //Legger til den andre main
+
+
+    mat A;
+    mat R;
+    //cout << R;
+    setup(10,5,A,R);
+    int rotations = rotate(1e-8, A, R);
+    vec lowestMeigenvalues = lowestEigenvaluesEigenvectors(3,A,R);
+    cout << lowestMeigenvalues << endl;
+    cout << R << endl;
+
 }
 
 TEST_CASE( "Eigenvalues are correct", "[eigenvalues]" ) {
@@ -189,38 +207,7 @@ TEST_CASE( "Eigenvalues are correct", "[eigenvalues]" ) {
     REQUIRE(fabs(setup(4, 100, 5, 1e-7, "harmonic")(3) - 26.3174) < 1e-4);
 }
 
-
 /*
-void setup(int N, double rho_max, mat& A, mat& R) {
-    // construct A, R
-}
-
-int rotate(double eps, mat& A, mat& R) {
-    // rotate
-    // A is diagonal
-    // R is eigenvec
-    int num_iterations;
-    return num_interations;
-}
-
-vec lowestEigenvaluesEigenvectors(int M, mat& A, mat& R) {
-    // sort A
-    // sort R accoding to A
-    //bruk sort(A) og sort_index(A). Sort_index(A) gir array som svarer til posisjonene til tilsvarende egenvektorer i matrisen R
-    vec lowestMeigenvalues; // vector of the M lowest eigenvalues
-    return lowestMeigenvalues;
-}
-
-int main () {
-    mat A;
-    mat R;
-    setup(10,5,A,R);
-    int rotations = rotate(1e-8, A, R);
-    vec lowestMeigenvalues = lowestEigenvaluesEigenvectors(3,A,R);
-    cout << lowestMeigenvalues << endl;
-}
-
-
 TEST_CASE("hei") {
     mat A;
     mat R;
