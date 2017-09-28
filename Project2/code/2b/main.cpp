@@ -13,15 +13,6 @@
 using namespace std;
 using namespace arma;
 
-//unsigned int Eigenvalues( unsigned int number ) {
-//    return number <= 1 ? number : Eigenvalues(number-1)*number;
-//}
-TEST_CASE( "Eigenvalues are correct", "[eigenvalues]" ) {
-    REQUIRE( eigenvalues(1) == 1); //{2.7561, 7.5639, 15.3575, 26.3174} );
-    //REQUIRE(Eigenvalues(1) == 7.5639);
-    //REQUIRE()
-}
-
 mat Jacobi_rotation(mat A, mat B, int N, int k, int l, double tau, double t, double c, double s, int i, int counter_zero_elements, int number_of_elements_over_diagonal, int u, int v, mat A_original, double eps)
 {
     //for(x = 0; x < M; x++){
@@ -37,7 +28,7 @@ mat Jacobi_rotation(mat A, mat B, int N, int k, int l, double tau, double t, dou
                     }
                     else {
                         t = -tau - sqrt(1+(tau*tau));
-                       // cout << t;
+                        // cout << t;
                     }
                     c = 1./(sqrt(1+(t*t)));
                     s = t*c;
@@ -81,9 +72,9 @@ mat Jacobi_rotation(mat A, mat B, int N, int k, int l, double tau, double t, dou
         }
     }
 
-    theEnd:
-        //cout << A_original << " \n" << A;
-        cout << "";
+theEnd:
+    //cout << A_original << " \n" << A;
+    cout << "";
 
     return A;
 }
@@ -102,20 +93,16 @@ vec eigenvalues(mat A, mat B, int N, int k, int l, double tau, double t, double 
     return eig;
 }
 
-int main()
-{
-    int dumb = 0;
-    char* dumb1[1];
-    int result = Catch::Session().run(dumb, dumb1);
 
+vec setup(int N, int M, double rho_max, double eps, string potential) {
     int i, j, k, l, x, counter_zero_elements, u, v;
     int number_of_elements_over_diagonal;
+    //int  N=4, M=100;
     double tau;
     double theta;
-    int N=4, M=100;
     double rho_min = 0;
-    double rho_max = 5;
-    double eps = 0.0000001;
+    //double rho_max = 5;
+    //double eps = 0.0000001;
 
     mat A = zeros<mat>(N,N);
     mat B = zeros<mat>(N,N);
@@ -128,6 +115,9 @@ int main()
 
     for(i = 1; i<N+1; i++){
         rho(i-1) = rho_min + i*h;
+        if(potential == ""){
+
+        }
         V(i-1) = rho(i-1)*rho(i-1);
     }
 
@@ -144,7 +134,7 @@ int main()
 
     B=A;
     eig = eigenvalues(A, B, N, k, l, tau, t, c, s, i, counter_zero_elements, number_of_elements_over_diagonal, u, v, A_original, eps);
-    //cout << " \n \n" << eig;
+    cout << " \n \n" << eig;
 
     double beta_e_2 = 1.44;
     double h_bar = 1;
@@ -152,24 +142,42 @@ int main()
     double alfa = (h_bar*h_bar)/(m*beta_e_2);
     vec rho_2(N);
 
-
-
     omega_r = {0.01, 0.5, 1, 5};
+
+    return eig;
+
     //cout << omega_r;
     /*for(i = 1; i < N; i++){
-        rho_2 = (omega_r*omega_r)*(rho(i)*rho(i)) + 1/rho(i);
-    }*/
+    rho_2 = (omega_r*omega_r)*(rho(i)*rho(i)) + 1/rho(i);
+}*/
     //cout << rho_2;
 
 
 
 
     /*//Print to output file
-    const char *path="/Documents/FYS3150/FYS4150/Project2/code/results.txt";
-    ofstream myfile(path);
-    myfile << n << "\n";
-    for(i=0; i<n; i++){
-        myfile << x[i] << " " << u[i] << " " << v[i] << "\n";
-    }
-    myfile.close();*/
+const char *path="/Documents/FYS3150/FYS4150/Project2/code/results.txt";
+ofstream myfile(path);
+myfile << n << "\n";
+for(i=0; i<n; i++){
+    myfile << x[i] << " " << u[i] << " " << v[i] << "\n";
 }
+myfile.close();*/
+}
+
+int main(int argc, char* argv[]) {
+    int dumb = 0;
+    char* dumb1[1];
+    int result = Catch::Session().run(dumb, dumb1);
+    vec eig = setup(4, 100, 5, 1e-7);
+}
+
+TEST_CASE( "Eigenvalues are correct", "[eigenvalues]" ) {
+    REQUIRE(fabs(setup(4, 100, 5, 1e-7)(0) - 2.7561) < 1e-4);
+    REQUIRE(fabs(setup(4, 100, 5, 1e-7)(1) - 7.5639) < 1e-4);
+    REQUIRE(fabs(setup(4, 100, 5, 1e-7)(2) - 15.3575) < 1e-4);
+    REQUIRE(fabs(setup(4, 100, 5, 1e-7)(3) - 26.3174) < 1e-4);
+}
+
+
+
