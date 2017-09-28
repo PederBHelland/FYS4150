@@ -8,15 +8,18 @@
 #include <algorithm>
 #define CATCH_CONFIG_RUNNER
 #include "../catch.hpp"
+//#include <list>
 
 using namespace std;
 using namespace arma;
 
-unsigned int Factorial( unsigned int number ) {
-    return number <= 1 ? number : Factorial(number-1)*number;
-}
+//unsigned int Eigenvalues( unsigned int number ) {
+//    return number <= 1 ? number : Eigenvalues(number-1)*number;
+//}
 TEST_CASE( "Eigenvalues are correct", "[eigenvalues]" ) {
-    REQUIRE( eigenvalues() == 1 );
+    REQUIRE( eigenvalues(1) == 1); //{2.7561, 7.5639, 15.3575, 26.3174} );
+    //REQUIRE(Eigenvalues(1) == 7.5639);
+    //REQUIRE()
 }
 
 mat Jacobi_rotation(mat A, mat B, int N, int k, int l, double tau, double t, double c, double s, int i, int counter_zero_elements, int number_of_elements_over_diagonal, int u, int v, mat A_original, double eps)
@@ -71,7 +74,7 @@ mat Jacobi_rotation(mat A, mat B, int N, int k, int l, double tau, double t, dou
                 }
                 //cout << number_of_elements_over_diagonal << "   " << counter_zero_elements << " \n\n";
                 if(counter_zero_elements == number_of_elements_over_diagonal){
-                    cout << "hei \n \n";
+                    //cout << "hei \n \n";
                     goto theEnd;
                 }
             }
@@ -79,7 +82,7 @@ mat Jacobi_rotation(mat A, mat B, int N, int k, int l, double tau, double t, dou
     }
 
     theEnd:
-        cout << A_original << " \n" << A;
+        //cout << A_original << " \n" << A;
         cout << "";
 
     return A;
@@ -117,7 +120,7 @@ int main()
     mat A = zeros<mat>(N,N);
     mat B = zeros<mat>(N,N);
     mat A_original = zeros<mat>(N,N);
-    vec rho(N), V(N), eig(N);
+    vec rho(N), V(N), eig(N), omega_r;
 
     double t, c, s; //tan, cos, sin
 
@@ -125,21 +128,48 @@ int main()
 
     for(i = 1; i<N+1; i++){
         rho(i-1) = rho_min + i*h;
-        V(i-1) = pow(rho(i-1),2);
+        V(i-1) = rho(i-1)*rho(i-1);
     }
 
     for(i = 1; i< N-1; i++){
-        A(i,i-1) = -1./pow(h,2);
-        A(i,i) = 2./pow(h,2) + V(i);
-        A(i,i+1) = -1./pow(h,2);
+        A(i,i-1) = -1./(h*h);
+        A(i,i) = 2./(h*h) + V(i);
+        A(i,i+1) = -1./(h*h);
     }
 
-    A(0,0) = 2./pow(h,2) + V(0);
-    A(N-1,N-1) = 2./pow(h,2) + V(N-1);
-    A(0,1) = A(N-1,N-2) = -1./pow(h,2);
+    A(0,0) = 2./(h*h) + V(0);
+    A(N-1,N-1) = 2./(h*h) + V(N-1);
+    A(0,1) = A(N-1,N-2) = -1./(h*h);
     A_original = A;
 
     B=A;
     eig = eigenvalues(A, B, N, k, l, tau, t, c, s, i, counter_zero_elements, number_of_elements_over_diagonal, u, v, A_original, eps);
     //cout << " \n \n" << eig;
+
+    double beta_e_2 = 1.44;
+    double h_bar = 1;
+    double m = 1;
+    double alfa = (h_bar*h_bar)/(m*beta_e_2);
+    vec rho_2(N);
+
+
+
+    omega_r = {0.01, 0.5, 1, 5};
+    //cout << omega_r;
+    /*for(i = 1; i < N; i++){
+        rho_2 = (omega_r*omega_r)*(rho(i)*rho(i)) + 1/rho(i);
+    }*/
+    //cout << rho_2;
+
+
+
+
+    /*//Print to output file
+    const char *path="/Documents/FYS3150/FYS4150/Project2/code/results.txt";
+    ofstream myfile(path);
+    myfile << n << "\n";
+    for(i=0; i<n; i++){
+        myfile << x[i] << " " << u[i] << " " << v[i] << "\n";
+    }
+    myfile.close();*/
 }
