@@ -113,6 +113,7 @@ vec setup(int N, int M, double rho_max, double eps, string potential, double w_r
 
     double h = (rho_max-rho_min)/N;
 
+
     for(i = 1; i<N+1; i++){
         rho(i-1) = rho_min + i*h;
         if(potential == "harmonic"){
@@ -179,9 +180,20 @@ int main(int argc, char* argv[]) {
     int result = Catch::Session().run(dumb, dumb1);
 
     //Oppgave d
-    double w_r = 0.01;
+    vec w_r = {0.01, 0.5, 1., 2.};  // can change The last element should be 5 not 2
+    int N = 4;                      // can change
+    int n = w_r.size();
+    mat eig_ = zeros<mat>(n,n);
     string potential = "coulomb";
-    vec eig = setup(3, 100, 5, 1e-7, potential, w_r);
+    for (int i = 0; i<n; i++){
+        vec eig = setup(N, 100, 5, 1e-7, potential, w_r(i));
+        for (int j=0; j<N; j++){
+            eig_(j,i) = eig(j);
+    }}
+    cout << eig_;
+
+    //cout << eig_;
+
     //if(potential == "coulomb"){
     //    cout << "The eigenvalues in the interaction case are:" << endl << eig << endl;
     //}
@@ -189,17 +201,16 @@ int main(int argc, char* argv[]) {
     //Legger til den andre main
 
 
-    mat A;
+    /*mat A;
     mat R;
     //cout << R;
     setup(10,5,A,R);
     int rotations = rotate(1e-8, A, R);
     vec lowestMeigenvalues = lowestEigenvaluesEigenvectors(3,A,R);
     cout << lowestMeigenvalues << endl;
-    cout << R << endl;
+*/
 
 }
-
 TEST_CASE( "Eigenvalues are correct", "[eigenvalues]" ) {
     REQUIRE(fabs(setup(4, 100, 5, 1e-7, "harmonic")(0) - 2.7561) < 1e-4);
     REQUIRE(fabs(setup(4, 100, 5, 1e-7, "harmonic")(1) - 7.5639) < 1e-4);
