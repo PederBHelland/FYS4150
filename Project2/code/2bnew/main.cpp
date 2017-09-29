@@ -137,7 +137,7 @@ void eigenvalues_matrix(int N, mat& A, mat& R, string potential, double eps, vec
 
 void print_eigenvectors_to_file(int N, vec& rho, mat& R, uvec& eigvec_sorted, double w_r){
     //Print to output file
-    string path = string("/uio/hume/student-u69/pederbh/FYS4150/Project2/results_w") + to_string(w_r) + ".txt";
+    string path = string("/uio/hume/student-u85/monande/FYS4150/Project2/results_w") + to_string(w_r) + ".txt";
     ofstream myfile(path);
     myfile << N << endl;
 
@@ -209,7 +209,7 @@ TEST_CASE( "Eigenvalues are correct", "[eigenvalues]" ) {
 }
 
 TEST_CASE( "The eigenvectors are orthonormal", "[eigenvectors]" ) {
-    int N = 4;
+    int N = 100;
     int rho_max = 5;
     double eps  = 1e-8;
     mat A = zeros<mat>(N,N);
@@ -220,8 +220,12 @@ TEST_CASE( "The eigenvectors are orthonormal", "[eigenvectors]" ) {
 
     setup(N, rho_max, A, R, "harmonic", rho);
     Jacobi_rotation(eps, N, A, R);
+    mat R_T = trans(R);
+    mat I = eye(N,N);
+    mat r =( R*R_T - I);
+    bool s = all(vectorise(r) < 1e-10);
+    REQUIRE(s);
 
-    REQUIRE(dot(R(:,0), transpose(R(:,0))) == Approx(1));
 }
 
 

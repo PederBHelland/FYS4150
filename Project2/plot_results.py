@@ -36,15 +36,13 @@ for line in file:
         u3[i-2*n-1] = float(line_[1])**2
     i += 1
 
-print u2
-
 plt.plot(rho, u1, 'r', rho, u2, 'b', rho, u3, 'g')
-plt.title('n=%s' % n, fontsize = 22)
-plt.xlabel('$\omega_r$', fontsize = 22)
+plt.title('The wave function for the three first eigenvalues' , fontsize = 22)
+plt.xlabel('rho', fontsize = 22)
 plt.ylabel('The wave function', fontsize = 22)
 pylab.xticks(fontsize=16)
 pylab.yticks(fontsize=16)
-plt.legend(['Different values of $\omega_r$'], fontsize = 16) 
+#plt.legend(['Different value '], fontsize = 16) 
 plt.show()
 
 
