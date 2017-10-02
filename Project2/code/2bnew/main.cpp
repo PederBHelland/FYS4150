@@ -150,7 +150,7 @@ int main(int argc, char* argv[]) {
     char* dumb1[1];
     int result = Catch::Session().run(dumb, dumb1);
 
-    int N = 200;
+    int N = 4;
     mat A = zeros<mat>(N,N);
     mat R = eye(N,N);
 
@@ -160,22 +160,29 @@ int main(int argc, char* argv[]) {
     vec eig_sorted = zeros<vec>(N);
     vec rho =zeros<vec>(N);
     uvec eigvec_sorted = zeros<uvec>(N);
+    mat eigvec_arma;
+    vec eig_arma;
 
     double eps  = 1e-8;
 
     for(int i = 0; i < w_r.size(); i++){
         setup(N, rho_max, A, R, "harmonic", rho, w_r(i));
         int number_of_rotations = Jacobi_rotation(eps, N, A, R);
-        //string text = string("Number of rotations for w_r: ") + w_r(i);
         cout << "Number of rotations: " << number_of_rotations << endl;
+        eig_sym(eig_arma, eigvec_arma, A);
         vec eig = eigenvalues(N, A, R, eig_sorted, eigvec_sorted);
         print_eigenvectors_to_file(N, rho, R, eigvec_sorted, w_r(i));
+        cout << "The calculated eigenvalues using Jacobi's rotation method: " << endl;
+        cout << eig << endl;
+        cout << "The calculated eigenvalues using Armadillo's eigsym function: " << endl;
+        cout << eig_arma << endl;
+
+        //Reset values
         R = eye(N,N);
         A = zeros<mat>(N,N);
         eig_sorted = zeros<vec>(N);
         rho =zeros<vec>(N);
         eigvec_sorted = zeros<uvec>(N);
-        cout << eig << endl;
     }
 
 
