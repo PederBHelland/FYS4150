@@ -6,23 +6,13 @@ import sys
 
 input = sys.argv[1]
 file = open(input, "r")
-"""
-A = np.loadtxt(input)
 
-plt.figure()
-for i in xrange(A.shape[0]) :
-    
-    plt.plot(np.insert(A[:,i],[0, A.shape[0]], [0, 0]),label='i=%d'%i)
-    plt.hold('on')
-plt.legend()
-plt.show()
-sys.exit(1)
-"""
 i = 0
 for line in file: 
     line_ = line.split()
     if i==0:
         n=int(line_[0])
+	w_r = float(line_[1])
         rho = np.zeros(n)
         u1 = np.zeros(n)
         u2 = np.zeros(n)
@@ -37,12 +27,12 @@ for line in file:
     i += 1
 
 plt.plot(rho, u1, 'r', rho, u2, 'b', rho, u3, 'g')
-plt.title('The wave function for the three first eigenvalues' , fontsize = 22)
-plt.xlabel('rho', fontsize = 22)
-plt.ylabel('The wave function', fontsize = 22)
+plt.title('Energy levels for the three first eigenvalues, $w_r$ = %.2f' %w_r , fontsize = 20)
+plt.xlabel('rho', fontsize = 18)
+plt.ylabel('The wave function', fontsize = 18)
 pylab.xticks(fontsize=16)
 pylab.yticks(fontsize=16)
-#plt.legend(['Different value '], fontsize = 16) 
+plt.legend(['Ground state', 'First excited state', 'Second excited state'], fontsize = 16) 
 plt.show()
 
 

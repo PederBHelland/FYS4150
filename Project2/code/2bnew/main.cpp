@@ -37,7 +37,6 @@ void setup(int N, double rho_max, mat& A, mat& R, string potential, vec& rho, do
     A(0,0) = 2./(h*h) + V(0);
     A(N-1,N-1) = 2./(h*h) + V(N-1);
     A(0,1) = A(N-1,N-2) = -1./(h*h);
-    //B=A;
 }
 
 void Jacobi_rotation(double eps, int N, mat& A, mat& R)
@@ -103,9 +102,7 @@ theEnd:
 
 vec eigenvalues(int N, mat& A, mat& R, vec& eig_sorted, uvec& eigvec_sorted)
 {
-    //cout << A << endl;
     vec eig(N);
-    //cout << A << endl;
     for(int i=0; i < N; i++){
         for(int j=0; j < N; j++){
             if(i == j){
@@ -113,16 +110,12 @@ vec eigenvalues(int N, mat& A, mat& R, vec& eig_sorted, uvec& eigvec_sorted)
             }
         }
     }
-    //cout << eig << endl;
     eig_sorted = sort(eig);
-    //cout << eig << endl;
     eigvec_sorted = sort_index(eig);
-    //cout << eig_sorted << endl;
     return eig_sorted;
 }
 
 void eigenvalues_matrix(int N, mat& A, mat& R, string potential, double eps, vec& eig_sorted, uvec& eigvec_sorted, vec& rho, vec w_r){
-    //Oppgave d
     int n = w_r.size();
     mat eig_ = zeros<mat>(N,n);
     for (int i = 0; i<n; i++){
@@ -139,7 +132,7 @@ void print_eigenvectors_to_file(int N, vec& rho, mat& R, uvec& eigvec_sorted, do
     //Print to output file
     string path = string("/uio/hume/student-u85/monande/FYS4150/Project2/results_w") + to_string(w_r) + ".txt";
     ofstream myfile(path);
-    myfile << N << endl;
+    myfile << N << "   " << w_r << endl;
 
     for(int j=0; j<3; j++){
         for(int i=0; i<N; i++){
@@ -161,11 +154,11 @@ int main(int argc, char* argv[]) {
     mat R = eye(N,N);
 
     vec w_r = {0.01, 0.5, 1.0, 5.0};
+    vec rho_max = {55, 8, 5.5, 2.5};
     vec eig_sorted = zeros<vec>(N);
     vec rho =zeros<vec>(N);
     uvec eigvec_sorted = zeros<uvec>(N);
 
-    int rho_max = 50;
     double eps  = 1e-8;
 
     //setup(N, rho_max, A, R, "harmonic", rho);
@@ -175,7 +168,7 @@ int main(int argc, char* argv[]) {
     //eigenvalues_matrix(N, A, R, "coulomb", eps, eig_sorted, eigvec_sorted, rho, w_r);
 
     for(int i = 0; i < w_r.size(); i++){
-        setup(N, rho_max, A, R, "coulomb", rho, w_r(i));
+        setup(N, rho_max(i), A, R, "coulomb", rho, w_r(i));
         Jacobi_rotation(eps, N, A, R);
         eigenvalues(N, A, R, eig_sorted, eigvec_sorted);
         print_eigenvectors_to_file(N, rho, R, eigvec_sorted, w_r(i));
