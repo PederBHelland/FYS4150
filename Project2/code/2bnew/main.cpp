@@ -184,8 +184,6 @@ int main(int argc, char* argv[]) {
         rho =zeros<vec>(N);
         eigvec_sorted = zeros<uvec>(N);
     }
-
-
 }
 
 TEST_CASE( "Eigenvalues are correct", "[eigenvalues]" ) {
