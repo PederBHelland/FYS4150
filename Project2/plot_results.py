@@ -27,7 +27,7 @@ for line in file:
     i += 1
 
 plt.plot(rho, u1, 'r', rho, u2, 'b', rho, u3, 'g')
-plt.title('Energy levels for the three first eigenvalues, $w_r$ = %.2f' %w_r , fontsize = 20)
+plt.title('Energy levels, $w_r$ = %.2f' %w_r , fontsize = 20)
 plt.xlabel('rho', fontsize = 18)
 plt.ylabel('The probability distribution', fontsize = 18)
 pylab.xticks(fontsize=16)
