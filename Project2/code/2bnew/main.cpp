@@ -130,10 +130,26 @@ void eigenvalues_matrix(int N, mat& A, mat& R, string potential, double eps, vec
     }
 }
 
+void print_eigenvectors_to_file_without_repulsion(int N, vec& rho, mat& R, uvec& eigvec_sorted){
+    string path = string("/uio/hume/student-u85/monande/FYS4150/Project2/results_without_repulsion.txt");
+    ofstream myfile(path);
+    myfile << N << " " << N << endl;
+
+    for(int j=0; j<3; j++){
+        for(int i=0; i<N; i++){
+            myfile << rho(i) << " " << R(i, eigvec_sorted(j)) << "\n";
+        }
+    }
+
+    myfile.close();
+}
+
 void print_eigenvectors_to_file(int N, vec& rho, mat& R, uvec& eigvec_sorted, double w_r){
     string path = string("/uio/hume/student-u85/monande/FYS4150/Project2/results_w") + to_string(w_r) + ".txt";
     ofstream myfile(path);
-    myfile << N << "   " << w_r << endl;
+    cout << w_r << endl;
+    myfile << N << " " << w_r <<endl;
+
 
     for(int j=0; j<3; j++){
         for(int i=0; i<N; i++){
@@ -150,33 +166,36 @@ int main(int argc, char* argv[]) {
     char* dumb1[1];
     int result = Catch::Session().run(dumb, dumb1);
 
-    int N = 4;
+    int N = 200;
     mat A = zeros<mat>(N,N);
     mat R = eye(N,N);
-
-    vec w_r = {0.25, 0.05, 1.0, 5.0}; // For comparison with the article: w_r = 0.25, 0.05
-    //vec rho_max = {10, 40, 5.5, 2.5}; // 10, 40
-    int rho_max = 5;
+    int rho_max_ = 5;
     vec eig_sorted = zeros<vec>(N);
-    vec rho =zeros<vec>(N);
+    vec rho = zeros<vec>(N);
     uvec eigvec_sorted = zeros<uvec>(N);
     mat eigvec_arma;
     vec eig_arma;
-
     double eps  = 1e-8;
+    int w_r_ = 0;
+    setup(N, rho_max_, A, R, "harmonic", rho, w_r_);
+    Jacobi_rotation(eps, N, A, R);
+    print_eigenvectors_to_file_without_repulsion(N, rho, R, eigvec_sorted);
+
+    vec w_r = {0.01, 0.5, 1.0, 5.0}; // For comparison with the article: w_r = 0.25, 0.05
+    vec rho_max = {55, 8, 5.5, 2.5}; // 10, 40
 
     for(int i = 0; i < w_r.size(); i++){
-        setup(N, rho_max, A, R, "harmonic", rho, w_r(i));
-        cout << A << endl;
+        setup(N, rho_max(i), A, R, "coulomb", rho, w_r(i));
+        //cout << A << endl;
         int number_of_rotations = Jacobi_rotation(eps, N, A, R);
-        cout << "Number of rotations: " << number_of_rotations << endl;
+        //cout << "Number of rotations: " << number_of_rotations << endl;
         eig_sym(eig_arma, eigvec_arma, A);
         vec eig = eigenvalues(N, A, R, eig_sorted, eigvec_sorted);
         print_eigenvectors_to_file(N, rho, R, eigvec_sorted, w_r(i));
-        cout << "The calculated eigenvalues using Jacobi's rotation method: " << endl;
-        cout << eig << endl;
-        cout << "The calculated eigenvalues using Armadillo's eigsym function: " << endl;
-        cout << eig_arma << endl;
+        //cout << "The calculated eigenvalues using Jacobi's rotation method: " << endl;
+        //cout << eig << endl;
+        //cout << "The calculated eigenvalues using Armadillo's eigsym function: " << endl;
+        //cout << eig_arma << endl;
 
         //Reset values
         R = eye(N,N);
