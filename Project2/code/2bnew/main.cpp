@@ -167,6 +167,7 @@ int main(int argc, char* argv[]) {
 
     for(int i = 0; i < w_r.size(); i++){
         setup(N, rho_max, A, R, "harmonic", rho, w_r(i));
+        cout << A << endl;
         int number_of_rotations = Jacobi_rotation(eps, N, A, R);
         cout << "Number of rotations: " << number_of_rotations << endl;
         eig_sym(eig_arma, eigvec_arma, A);
