@@ -133,7 +133,7 @@ void eigenvalues_matrix(int N, mat& A, mat& R, string potential, double eps, vec
 }
 
 void print_eigenvectors_to_file_without_repulsion(int N, vec& rho, mat& R, uvec& eigvec_sorted){
-    string path = string("/uio/hume/student-u69/pederbh/FYS4150/Project2/results_without_repulsion.txt");
+    string path = string("/uio/hume/student-u85/monande/FYS4150/Project2/results_without_repulsion.txt");
     ofstream myfile(path);
     myfile << N << " " << N << endl;
 
@@ -148,7 +148,7 @@ void print_eigenvectors_to_file_without_repulsion(int N, vec& rho, mat& R, uvec&
 
 void print_eigenvectors_to_file(int N, vec& rho, mat& R, uvec& eigvec_sorted, double w_r){
     //uio/hume/student-u85/monande/FYS4150/
-    string path = string("/uio/hume/student-u69/pederbh/FYS4150/Project2/results_w") + to_string(w_r) + ".txt";
+    string path = string("/uio/hume/student-u85/monande/FYS4150/Project2/results_w") + to_string(w_r) + ".txt";
     ofstream myfile(path);
     cout << w_r << endl;
     myfile << N << " " << w_r <<endl;
@@ -169,7 +169,7 @@ int main(int argc, char* argv[]) {
     char* dumb1[1];
     int result = Catch::Session().run(dumb, dumb1);
 
-    int N = 400;
+    int N = 200;
     mat A = zeros<mat>(N,N);
     mat R = eye(N,N);
     int rho_max_ = 5;
@@ -190,9 +190,15 @@ int main(int argc, char* argv[]) {
 
 
     for(int i = 0; i < w_r.size(); i++){  
+        //Reset values
+        R = eye(N,N);
+        A = zeros<mat>(N,N);
+        eig_sorted = zeros<vec>(N);
+        rho =zeros<vec>(N);
+        eigvec_sorted = zeros<uvec>(N);
 
         //Jacobi rotation
-        setup(N, rho_max(i), A, R, "harmonic", rho, w_r(i));
+        setup(N, rho_max(i), A, R, "coulomb", rho, w_r(i));
         clock_t t;
         t = clock();
         int number_of_rotations = Jacobi_rotation(eps, N, A, R);       
@@ -219,11 +225,11 @@ int main(int argc, char* argv[]) {
         //cout << eig_arma << endl;
 
         //Reset values
-        R = eye(N,N);
-        A = zeros<mat>(N,N);
-        eig_sorted = zeros<vec>(N);
-        rho =zeros<vec>(N);
-        eigvec_sorted = zeros<uvec>(N);
+//        R = eye(N,N);
+//        A = zeros<mat>(N,N);
+//        eig_sorted = zeros<vec>(N);
+//        rho =zeros<vec>(N);
+//        eigvec_sorted = zeros<uvec>(N);
     }
 }
 
