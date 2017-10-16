@@ -8,29 +8,59 @@
 #include <algorithm>
 
 using namespace std;
-//using namespace arma;
+using namespace arma;
 
-
-void Euler()
+void Euler(double x_0, double y_0, double M0, double x_1, double y_1, double M1, int N)
 {
-    int N = 100;
-    arma::vec a, v, x, t;
-    double dt = 1/N;
-    double M_earth = 6e24;
-    double M_sun = 2e30;
+    //Euler method to calculate the movements the Earth around the sun
+    // x_0, y_0 are the intial conditions for the sun
+    // x_1, y_1 are the initial conditions for the Earth
+
+    mat a1(N,2), v1(N,2), x1(N,2), F(N,2);
+    vec t(N), ax(N), ay(N);
     double G = 6.67408e-11;
-    double r = 1.5e11;
-//    double m = M_earth;
-    double F = (G*M_sun*M_earth)/(r*r);
+    double dt = 1./N;
+
+    //Initial conditions
+    x1(0,0) = x_1;
+    x1(0,1) = y_1;
+    double r0 = sqrt((x1(0,0)-x_0)*(x1(0,0)-x_0) + (x1(0,1)-y_0)*(x1(0,1)-y_0));
+    double v0 = sqrt(G*M0/r0);
+    double theta = asin(x1(0,1)/r0);
+    v1(0,0) = 0.1;
+    v1(0,1) = v0;
+    t(0) = 0;
+
     for (int i = 0; i < N-1; i++){
-        a(i) = F/M_earth;
-        v(i+1) = v(i) + a(i+1)*dt;
-        x(i+1) = x(i)  + v(i+1)*dt;
+        //Distance between the earth and the sun
+        double rx = x1(i,0)-x_0;
+        double ry = x1(i,1)-y_0;
+        double r = sqrt(rx*rx + ry*ry);
+
+        //Gravitational force in x and y direction
+        double F_ = -(G*M0*M1)/(r*r*r); // F % r
+        F(i,0) = rx*F_;
+        F(i,1) = ry*F_;
+
+        //Motion of the earth
+        a1(i,0) = F(i,0)/M1;
+        a1(i,1) = F(i,1)/M1;
+        v1(i+1,0) = v1(i,0) + a1(i,0)*dt;
+        v1(i+1,1) = v1(i,1) + a1(i,1)*dt;
+        x1(i+1,0) = x1(i,0) + v1(i+1,0)*dt;
+        x1(i+1,1) = x1(i,1) + v1(i+1,1)*dt;
+
         t(i+1) = t(i) + dt;
+        cout << x1(i+1,0) << endl;
     }
+    //cout << x1 << endl;
 }
 
 int main()
 {
-//Euler();
+    int N = 2000;
+    double M_earth = 6e24; //kg
+    double M_sun = 2e30;
+    double x_0 = 0, y_0 = 0, x_1 = 1.5e11, y_1 = 0; //m
+    Euler(x_0, y_0, M_sun, x_1, y_1, M_earth, N);
 }
