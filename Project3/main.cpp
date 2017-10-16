@@ -8,12 +8,13 @@
 #include <algorithm>
 
 using namespace std;
-using namespace arma;
+//using namespace arma;
 
-int main()
+
+void Euler()
 {
     int N = 100;
-    vec a, v, x, t;
+    arma::vec a, v, x, t;
     double dt = 1/N;
     double M_earth = 6e24;
     double M_sun = 2e30;
@@ -27,5 +28,9 @@ int main()
         x(i+1) = x(i)  + v(i+1)*dt;
         t(i+1) = t(i) + dt;
     }
-    cout << a << endl;
+}
+
+int main()
+{
+//Euler();
 }
