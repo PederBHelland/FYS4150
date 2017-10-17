@@ -36,6 +36,7 @@ public:
     void GravitationalForce_RK(double x_rel, double y_rel, double z_rel, double &Fx, double &Fy, double &Fz, double mass1, double mass2);
     void KineticEnergySystem();
     void PotentialEnergySystem(double epsilon);
+    void EulerEarthSun(int integrationPoints, double finalTime, double initialEarthPosition_x, double intialEarthPosition_y, double initialVelocity_x, double initialVelocity_y);
     double EnergyLoss();
     bool Bound(planet OnePlanet);
 
