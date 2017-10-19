@@ -16,7 +16,13 @@ public:
     vector<planet> all_planets;
     double totalKinetic;
     double totalPotential;
+    bool doFileWriting = true;
+    int freq           = 10;
 
+    void setFileWriting(bool w, int f) {
+        doFileWriting = w;
+        freq = f;
+    }
     // constants
 
     // initializers
@@ -36,9 +42,11 @@ public:
     void GravitationalForce_RK(double x_rel, double y_rel, double z_rel, double &Fx, double &Fy, double &Fz, double mass1, double mass2);
     void KineticEnergySystem();
     void PotentialEnergySystem(double epsilon);
-    void EulerEarthSun(int integrationPoints, double finalTime, double initialEarthPosition_x, double intialEarthPosition_y, double initialVelocity_x, double initialVelocity_y);
+    void Euler(int dimension, int integrationPoints, int finalTime, double epsilon);
     double EnergyLoss();
     bool Bound(planet OnePlanet);
+    void writeInformationToFile(std::string type, int integrationPoints, int dim);
+    void writeToFile(std::string type, planet current, int integrationPoints, int dim, double time, double timeStep, double kineticEnergy, double potentialEnergy, double angularMomentum);
 
 };
 
