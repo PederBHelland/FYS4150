@@ -74,5 +74,6 @@ double planet::PotentialEnergy(planet &otherPlanet, double Gconst, double epsilo
 
 double planet::AngularMomentum(planet otherPlanet)
 {
+    cout << hei << endl;
     return this->mass*this->distance(otherPlanet)*sqrt(this->velocity[0]*this->velocity[0] + this->velocity[1]*this->velocity[1] + this->velocity[2]*this->velocity[2]);
 }
