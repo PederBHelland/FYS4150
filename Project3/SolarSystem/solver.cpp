@@ -2,6 +2,7 @@
 #include "planet.h"
 #include <iostream>
 #include <cmath>
+#include <iomanip>
 #include "time.h"
 #include "armadillo"
 
@@ -132,17 +133,34 @@ void::solver::Euler(int dimension, int integrationPoints, int finalTime, double 
                 current.velocity[j] = new_velocity;
             }
 
+            double sunPosition_x;
+            double sunPosition_y;
+            double sunPosition_z;
+            if (current.mass == 1.){
+               sunPosition_x = current.position[0];
+               sunPosition_y = current.position[1];
+               sunPosition_z = current.position[2];
+            }
+
+
+            current.position[0] -= sunPosition_x;
+            current.position[1] -= sunPosition_y;
+            current.position[2] -= sunPosition_z;
+
             double kineticEnergy = current.KineticEnergy();
             double potentialEnergy = 0;
             double angularMomentum = 0;
-            for(int nr2=nr1+1; nr2<total_planets; nr2++){
-                planet &other = all_planets[nr2];
-                potentialEnergy += current.PotentialEnergy(other, gravitationalConstant, epsilon);
-                angularMomentum += current.AngularMomentum(other);
+            for(int nr2=0; nr2<total_planets; nr2++){
+                if(nr2 != nr1){
+                    planet &other = all_planets[nr2];
+                    potentialEnergy += current.PotentialEnergy(other, gravitationalConstant, epsilon);
+                    angularMomentum += current.AngularMomentum(other);
+                }
+
             }
 
             if(n%freq == 0 && doFileWriting == true){
-                writeToFile("Euler", current, time+timeStep, kineticEnergy, potentialEnergy, angularMomentum);
+                writeToFile("Euler", current, time+timeStep, integrationPoints, kineticEnergy, potentialEnergy, angularMomentum);
             }
         }
 
@@ -154,14 +172,18 @@ void::solver::Euler(int dimension, int integrationPoints, int finalTime, double 
 }
 
 
-void solver::VelocityVerlet(int dimension, int integrationPoints, int finalTime, double epsilon)//(int dimension, int integrationPoints, double final_time, double epsilon)
-{
-    /*Euler method to solve two coupled ODEs.*/
+void solver::VelocityVerlet(int dimension, int integrationPoints, double final_time, double epsilon, double mercury_closestToSun)
+{   /*  Velocity-Verlet solver for two coupeled ODEs in a given number of dimensions.
+    The algorithm is, exemplified in 1D for position x(t), velocity v(t) and acceleration a(t):
+    x(t+dt) = x(t) + v(t)*dt + 0.5*dt*dt*a(t);
+    v(t+dt) = v(t) + 0.5*dt*[a(t) + a(t+dt)];*/
 
     // Define time step
-    double timeStep = finalTime/(double)integrationPoints;
+    double timeStep = final_time/((double) integrationPoints);
     double time = 0.0;
     double loss = 0.; // Possible energy loss
+    //double gravitationalConstant = 39.4784; // (AU)³/solarMass*yr²
+    int lostPlanets[integrationPoints];
     double gravitationalConstant = 39.4784; // (AU)³/solarMass*yr²
 
     // Set up arrays
@@ -170,15 +192,29 @@ void solver::VelocityVerlet(int dimension, int integrationPoints, int finalTime,
 
     // Initialize forces
     double Fx,Fy,Fz,Fxnew,Fynew,Fznew; // Forces in each dimension
-    int n = 0; //number of iterations
 
-    if(doFileWriting == true){
-        writeInformationToFile("Euler", integrationPoints, dimension);
-    }
+    int n = 0;
+    lostPlanets[n] = 0;
+    //output_lost << time << "\t" << lostPlanets[n] << std::endl;
+    n+=1;
+
 
     // Set up clock to measure the time usage
-    double startClock = clock();
-    while(time < finalTime){
+    clock_t planet_VV,finish_VV;
+    planet_VV = clock();
+
+    // PLANET CALCULATIONS
+    // Loop over time
+    time += timeStep;
+
+    if(doFileWriting == true){
+        writeInformationToFile("Verlet", integrationPoints, dimension);
+        writeInformationToFile("Verlet", integrationPoints, dimension);
+    }
+
+    while(time < final_time){
+        if ((n % 1000) == 0) cout << time/((double)final_time)*100.0 << endl;
+        lostPlanets[n] = 0;
         // Loop over all planets
         for(int nr1=0; nr1<total_planets; nr1++){
             planet &current = all_planets[nr1]; // Current planet we are looking at
@@ -186,12 +222,12 @@ void solver::VelocityVerlet(int dimension, int integrationPoints, int finalTime,
             Fx = Fy = Fz = Fxnew = Fynew = Fznew = 0.0; // Reset forces before each run
 
             // Calculate forces in each dimension
-            for(int nr2=0; nr2<total_planets; nr2++){
-                if(nr1!=nr2) {
-                    planet &other = all_planets[nr2];
-                    GravitationalForce(current,other,Fx,Fy,Fz,epsilon);
+                for(int nr2=0; nr2<total_planets; nr2++){
+                    if(nr1!=nr2) {
+                        planet &other = all_planets[nr2];
+                        GravitationalForce(current,other,Fx,Fy,Fz,epsilon);
+                    }
                 }
-            }
 
             // Acceleration in each dimension for current planet
             acceleration[nr1][0] = Fx/current.mass;
@@ -200,36 +236,108 @@ void solver::VelocityVerlet(int dimension, int integrationPoints, int finalTime,
 
             // Calculate new position for current planet
             for(int j=0; j<dimension; j++) {
-                double new_position = current.position[j] + current.velocity[j]*timeStep;
-                current.position[j] = new_position;
+                current.position[j] += current.velocity[j]*timeStep + 0.5*timeStep*timeStep*acceleration[nr1][j];
             }
+
+            double sunPosition_x;
+            double sunPosition_y;
+            double sunPosition_z;
+            if (current.mass == 1.){
+               sunPosition_x = current.position[0];
+               sunPosition_y = current.position[1];
+               sunPosition_z = current.position[2];
+            }
+
+
+            current.position[0] -= sunPosition_x;
+            current.position[1] -= sunPosition_y;
+            current.position[2] -= sunPosition_z;
+
+
+
+            if (current.mass == 1.65e-7){
+                double mercuryDistance = sqrt(current.position[0]*current.position[0] + current.position[1]*current.position[1] + current.position[2]*current.position[2]);
+                if(n%freq == 0 && doFileWriting == true) {
+                    writeMercuryToFile(mercuryDistance, time, integrationPoints);
+                }
+                if (mercuryDistance < mercury_closestToSun){
+                     mercury_closestToSun = mercuryDistance;
+                }
+            }
+
+
+            // Loop over all other planets
+                for(int nr2=0; nr2<total_planets; nr2++){
+                    if(nr1!=nr2) {
+                        planet &other = all_planets[nr2];
+                        GravitationalForce(current,other,Fxnew,Fynew,Fznew,epsilon);
+                    }
+                }
+
+            // Acceleration each dimension exerted for current planet
+            acceleration_new[nr1][0] = Fxnew/current.mass;
+            acceleration_new[nr1][1] = Fynew/current.mass;
+            acceleration_new[nr1][2] = Fznew/current.mass;
 
             // Calculate new velocity for current planet
             for(int j=0; j<dimension; j++){
-                double new_velocity = current.velocity[j] + acceleration[nr1][j]*timeStep;
-                current.velocity[j] = new_velocity;
+                current.velocity[j] += 0.5*timeStep*(acceleration[nr1][j] + acceleration_new[nr1][j]);
             }
+
 
             double kineticEnergy = current.KineticEnergy();
             double potentialEnergy = 0;
             double angularMomentum = 0;
-            for(int nr2=nr1+1; nr2<total_planets; nr2++){
-                planet &other = all_planets[nr2];
-                potentialEnergy += current.PotentialEnergy(other, gravitationalConstant, epsilon);
-                angularMomentum += current.AngularMomentum(other);
+            for(int nr2=0; nr2<total_planets; nr2++){
+                if(nr2 != nr1){
+                    planet &other = all_planets[nr2];
+                    potentialEnergy += current.PotentialEnergy(other, gravitationalConstant, epsilon);
+                    angularMomentum += current.AngularMomentum(other);
+
+                }
             }
 
             if(n%freq == 0 && doFileWriting == true){
-                writeToFile("Euler", current, time+timeStep, kineticEnergy, potentialEnergy, angularMomentum);
+                writeToFile("Verlet", current, time+timeStep, integrationPoints, kineticEnergy, potentialEnergy, angularMomentum);
             }
         }
 
-    time += timeStep;
-    n++;
-    }
-    double elapsedTime = clock() - startClock;
-    std::cout << "Total time Euler = " << "\t" << ((float)(elapsedTime)/CLOCKS_PER_SEC) << " seconds" << std::endl; // print elapsed time
+        loss += EnergyLoss();
 
+        for(int nr=0;nr<total_planets;nr++){
+            planet &Current = all_planets[nr];
+            if(!(this->Bound(Current))){
+                lostPlanets[n] += 1;
+            }
+        }
+
+        n++;
+        time += timeStep;
+    }
+    cout << mercury_closestToSun<< endl;
+
+    //Stop clock and print out time usage
+    finish_VV = clock();
+    std::cout << "Total time Verlet = " << "\t" << ((float)(finish_VV - planet_VV)/CLOCKS_PER_SEC) << " seconds" << std::endl; // print elapsed time
+
+    std::cout << "One time step = " << "\t" << ((float)(finish_VV - planet_VV)/CLOCKS_PER_SEC)/integrationPoints << " seconds" << std::endl; // print elapsed time
+
+    //loss = EnergyLoss();
+    std::cout << "Total energyloss due to unbound planets: " << loss << std::endl;
+
+    double boundPlanets = 0;
+    for(int nr=0;nr<total_planets;nr++){
+        planet &Current = all_planets[nr];
+        if(this->Bound(Current)){
+            //output_bound << nr << std::endl;
+            boundPlanets += 1;
+        }
+    }
+    std::cout << "There are " << boundPlanets << " bound planets at the end of the run" << std::endl;
+
+    //Clear memory
+    delete_matrix(acceleration);
+    delete_matrix(acceleration_new);
 }
 
 
@@ -307,10 +415,14 @@ void solver::PotentialEnergySystem(double epsilon)
     }
     for(int nr1=0;nr1<total_planets;nr1++){
         planet &Current = all_planets[nr1];
-        for(int nr2=nr1+1;nr2<total_planets;nr2++){
-            planet &Other = all_planets[nr2];
-            Current.potential += Current.PotentialEnergy(Other,G,epsilon);
-            Other.potential += Other.PotentialEnergy(Current,G,epsilon);
+        for(int nr2=0;nr2<total_planets;nr2++){
+            if (nr2!= nr1){
+                planet &Other = all_planets[nr2];
+                Current.potential += Current.PotentialEnergy(Other,G,epsilon);
+                Other.potential += Other.PotentialEnergy(Current,G,epsilon);
+
+        }
+
         }
     }
 }
@@ -346,6 +458,10 @@ void::solver::writeInformationToFile(string type, int integrationPoints, int dim
     string planetEnergiesPath= string("/uio/hume/student-u85/monande/FYS4150/Project3/PlanetEnergies") + type + "Results.txt";
     ofstream myPlanetEnergiesFile(planetEnergiesPath);
 
+    string mercuryPositionPath= string("/uio/hume/student-u85/monande/FYS4150/Project3/MercuryPositionResults.txt");
+    ofstream myMercuryPositionFile;
+    myMercuryPositionFile.open(mercuryPositionPath,std::ios::app);
+
     myPlanetPositionFile << integrationPoints << endl;
     myPlanetPositionFile << dim << endl;
     myPlanetPositionFile << total_planets << endl;
@@ -354,22 +470,42 @@ void::solver::writeInformationToFile(string type, int integrationPoints, int dim
     myPlanetEnergiesFile << dim << endl;
     myPlanetEnergiesFile << total_planets << endl;
 
+    myMercuryPositionFile << integrationPoints << endl;
+    myMercuryPositionFile << dim << endl;
+
+
     myPlanetPositionFile.close();
     myPlanetEnergiesFile.close();
+    myMercuryPositionFile.close();
 }
 
-void solver::writeToFile(string type, planet current, double time, double kineticEnergy, double potentialEnergy, double angularMomentum) {
+void solver::writeToFile(string type, planet current, double time, int integrationPoints, double kineticEnergy, double potentialEnergy, double angularMomentum) {
     string planetPositionPath= string("/uio/hume/student-u85/monande/FYS4150/Project3/PlanetPosition") + type + "Results.txt";
     ofstream myPlanetPositionFile;
     myPlanetPositionFile.open(planetPositionPath,std::ios::app);
 
     string planetEnergiesPath= string("/uio/hume/student-u85/monande/FYS4150/Project3/PlanetEnergies") + type + "Results.txt";
-    ofstream myPlanetEnergiesFile(planetEnergiesPath);
+    ofstream myPlanetEnergiesFile;
+    myPlanetEnergiesFile.open(planetEnergiesPath,std::ios::app);
 
     myPlanetPositionFile << current.position[0] << " " << current.position[1] << " " << current.position[2] << endl;
     myPlanetEnergiesFile << time << " " << kineticEnergy << " " << potentialEnergy << " " << angularMomentum << endl;
 
     myPlanetPositionFile.close();
     myPlanetEnergiesFile.close();
+}
 
+void solver::writeMercuryToFile(double mercuryDistance, double time, int integrationPoints) {
+
+    string mercuryPositionPath= string("/uio/hume/student-u85/monande/FYS4150/Project3/MercuryPositionResults.txt");
+
+    if (! myMercuryPositionFile.is_open()) {
+        myMercuryPositionFile.open(mercuryPositionPath,std::ios::out);
+    }
+
+
+    myMercuryPositionFile << setprecision(16) << time << " " << mercuryDistance << endl;
+
+
+    //myMercuryPositionFile.close();
 }

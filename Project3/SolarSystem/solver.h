@@ -19,6 +19,8 @@ public:
     bool doFileWriting = true;
     int freq           = 10;
 
+    std::ofstream myMercuryPositionFile;
+
     void setFileWriting(bool w, int f) {
         doFileWriting = w;
         freq = f;
@@ -35,7 +37,7 @@ public:
     void GravitationalConstant();
     void print_position(std::ofstream &output, int dimension, double time, int number);
     void print_energy(std::ofstream &output, double time, double epsilon);
-    void VelocityVerlet(int dimension, int integrationPoints, int finalTime, double epsilon);//(int dimension, int integration_points, double final_time, double epsilon);
+    void VelocityVerlet(int dimension, int integration_points, double final_time, double epsilon, double mercury_closestToSun);//(int dimension, int integrationPoints, int finalTime, double epsilon);//
     double **setup_matrix(int height, int width);
     void delete_matrix(double **matrix);
     void GravitationalForce(planet &current, planet &other, double &Fx, double &Fy, double &Fz, double epsilon);
@@ -46,7 +48,8 @@ public:
     double EnergyLoss();
     bool Bound(planet OnePlanet);
     void writeInformationToFile(std::string type, int integrationPoints, int dim);
-    void writeToFile(std::string type, planet current, double time, double kineticEnergy, double potentialEnergy, double angularMomentum);
+    void writeMercuryToFile(double mercuryDistance, double time, int integrationPoints);
+    void writeToFile(std::string type, planet current, double time, int integrationPoints, double kineticEnergy, double potentialEnergy, double angularMomentum);
 
 };
 
