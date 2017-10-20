@@ -27,7 +27,7 @@ public:
     double KineticEnergy();
     double PotentialEnergy(planet &otherPlanet, double Gconst, double epsilon);
     double AngularMomentum(planet otherPlanet);
-
+    cout << hei <<endl;
 };
 
 #endif // PLANET_H
