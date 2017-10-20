@@ -26,10 +26,15 @@ for line in file:
     
     t[i] = t_i
     r[i] = r_i
-    if r[i+1] > r[i] and r[i-1] > r[i]:
-        r_min.append(r[i])
-        t_r_min.append(t[i])
     i += 1
+for j in range(len(r)-1):
+    if j >= 1:
+        if r[j+1] > r[j] and r[j-1] > r[j]:
+            print 'hell yeah'
+            r_min.append(r[j])
+            t_r_min.append(t[j])
+print len(t_r_min)
+
 '''
 for i in range(len(r)):
     a = min(r)
@@ -42,7 +47,7 @@ print 'r_min: ', r_min
 print 't_r_min: ', t_r_min
 
 plt.plot(t[:-1], r[:-1])
-plt.axis([0,1,0.3895,0.3905])
+#plt.axis([0,1,0.3895,0.3905])
 plt.show()
 #r_min = min(r)
 #print r_min
