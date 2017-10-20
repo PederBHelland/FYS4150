@@ -392,11 +392,11 @@ double solver::EnergyLoss()
 }
 
 void::solver::writeInformationToFile(string type, int integrationPoints, int dim){
-    string planetPositionPath= string("/uio/hume/student-u69/pederbh/FYS4150/Project3/PlanetPosition") + type + "Results.txt";
+    string planetPositionPath= string("/Users/monaanderssen/Documents/FYS3150/FYS4150/Project3/Project3/PlanetPosition") + type + "Results.txt";
     ofstream myPlanetPositionFile;
     myPlanetPositionFile.open(planetPositionPath,std::ios::app);
 
-    string planetEnergiesPath= string("/uio/hume/student-u69/pederbh/FYS4150/Project3/PlanetEnergies") + type + "Results.txt";
+    string planetEnergiesPath= string("/Users/monaanderssen/Documents/FYS3150/FYS4150/Project3/Project3/PlanetEnergies") + type + "Results.txt";
     ofstream myPlanetEnergiesFile(planetEnergiesPath);
 
     myPlanetPositionFile << integrationPoints << endl;
@@ -412,11 +412,11 @@ void::solver::writeInformationToFile(string type, int integrationPoints, int dim
 }
 
 void solver::writeToFile(string type, planet current, int integrationPoints, int dim, double time, double timeStep, double kineticEnergy, double potentialEnergy, double angularMomentum) {
-    string planetPositionPath= string("/uio/hume/student-u69/pederbh/FYS4150/Project3/PlanetPosition") + type + "Results.txt";
+    string planetPositionPath= string("/Users/monaanderssen/Documents/FYS3150/FYS4150/Project3/PlanetPosition") + type + "Results.txt";
     ofstream myPlanetPositionFile;
     myPlanetPositionFile.open(planetPositionPath,std::ios::app);
 
-    string planetEnergiesPath= string("/uio/hume/student-u69/pederbh/FYS4150/Project3/PlanetEnergies") + type + "Results.txt";
+    string planetEnergiesPath= string("/Users/monaanderssen/Documents/FYS3150/FYS4150/Project3/PlanetEnergies") + type + "Results.txt";
     ofstream myPlanetEnergiesFile(planetEnergiesPath);
 
     myPlanetPositionFile << current.position[0] << " " << current.position[1] << " " << current.position[2] << endl;

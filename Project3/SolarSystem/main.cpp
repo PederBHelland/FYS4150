@@ -41,6 +41,7 @@ int main()
         //planet planet1(0.000003,1.,0.0,0.0,0.0,6.3,0.); // Earth: (mass,x,y,z,vx,vy,vz)
         planet planet1(1.,0.,0.,0.,0.,0.,0.);           // Sun: (mass,x,y,z,vx,vy,vz)
         planet planet2(0.000003,1.,0.0,0.0,0.0,2*M_PI,0.); //Earth, testing to find circular orbit
+        /*
         planet planet3(0.95e-3, 5.2, 0., 0., 0., 2*M_PI/sqrt(5.2), 0. ); //Jupiter 2.76
         planet planet4(3.3e-7, 1.52, 0., 0., 0., 2*M_PI/sqrt(1.52), 0. ); //Mars
         planet planet5(2.45e-6, 0.72, 0., 0., 0., 2*M_PI/sqrt(0.72), 0. ); //Venus
@@ -48,13 +49,14 @@ int main()
         planet planet7(1.65e-7, 0.39, 0., 0., 0., 2*M_PI/sqrt(0.39), 0. ); //Merkur
         planet planet8(4.4e-5, 19.19, 0., 0., 0., 2*M_PI/sqrt(19.19), 0. );//Uranus
         planet planet9(0.515e-4, 30.06, 0., 0., 0., 2*M_PI/sqrt(30.06), 0. ); //Neptun
-        planet planet10(0.655e-8, 39.53, 0., 0., 0., 2*M_PI/sqrt(39.53), 0. ); //Pluto
+        planet planet10(0.655e-8, 39.53, 0., 0., 0., 2*M_PI/sqrt(39.53), 0. ); //Pluto*/
 
         solver binary_vv(5.0);
         binary_vv.setFileWriting(true,1);
 
         binary_vv.add(planet1);
         binary_vv.add(planet2);
+        /*
         binary_vv.add(planet3);
         binary_vv.add(planet4);
         binary_vv.add(planet5);
@@ -62,7 +64,7 @@ int main()
         binary_vv.add(planet7);
         binary_vv.add(planet8);
         binary_vv.add(planet9);
-        binary_vv.add(planet10);
+        binary_vv.add(planet10);*/
 
         PrintInitialValues(Dimension,TimeStep,FinalTime,x,v,IntegrationPoints);
 

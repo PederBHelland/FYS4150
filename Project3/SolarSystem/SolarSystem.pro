@@ -7,6 +7,9 @@ SOURCES += main.cpp \
     planet.cpp \
     solver.cpp
 
+INCLUDEPATH += /usr/local/include
+LIBS += -L/usr/local/lib -larmadillo -llapack -lblas
+
 HEADERS += \
     planet.h \
     solver.h
