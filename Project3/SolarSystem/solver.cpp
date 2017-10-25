@@ -297,19 +297,18 @@ void solver::VelocityVerlet(int dimension, int integrationPoints, double final_t
             }
         }
 
-        loss += EnergyLoss();
+//        loss += EnergyLoss();
 
-        for(int nr=0;nr<total_planets;nr++){
-            planet &Current = all_planets[nr];
-            if(!(this->Bound(Current))){
-                lostPlanets[n] += 1;
-            }
-        }
+//        for(int nr=0;nr<total_planets;nr++){
+//            planet &Current = all_planets[nr];
+//            if(!(this->Bound(Current))){
+//                lostPlanets[n] += 1;
+//            }
+//        }
 
         n++;
         time += timeStep;
     }
-
 
     //Stop clock and print out time usage
     finish_VV = clock();
@@ -606,14 +605,14 @@ double solver::EnergyLoss()
 }
 
 void::solver::writeInformationToFile(string type, int integrationPoints, int dim){
-    string planetPositionPath= string("/Users/monaanderssen/Documents/FYS3150/FYS4150/Project3/PlanetPosition") + type + "Results.txt";
+    string planetPositionPath= string("/uio/hume/student-u69/pederbh/FYS4150/Project3/PlanetPosition") + type + "Results.txt";
     ofstream myPlanetPositionFile;
     myPlanetPositionFile.open(planetPositionPath,std::ios::app);
 
-    string planetEnergiesPath= string("/Users/monaanderssen/Documents/FYS3150/FYS4150/Project3/PlanetEnergies") + type + "Results.txt";
+    string planetEnergiesPath= string("/uio/hume/student-u69/pederbh/FYS4150/Project3/PlanetEnergies") + type + "Results.txt";
     ofstream myPlanetEnergiesFile(planetEnergiesPath);
 
-    string mercuryPositionPath= string("/Users/monaanderssen/Documents/FYS3150/FYS4150/Project3/MercuryPositionResults.txt");
+    string mercuryPositionPath= string("/uio/hume/student-u69/pederbh/FYS4150/Project3/MercuryPositionResults.txt");
     ofstream myMercuryPositionFile;
     myMercuryPositionFile.open(mercuryPositionPath,std::ios::app);
 
@@ -635,11 +634,11 @@ void::solver::writeInformationToFile(string type, int integrationPoints, int dim
 }
 
 void solver::writeToFile(string type, planet current, double time, int integrationPoints, double kineticEnergy, double potentialEnergy, double angularMomentum) {
-    string planetPositionPath= string("/Users/monaanderssen/Documents/FYS3150/FYS4150/Project3/PlanetPosition") + type + "Results.txt";
+    string planetPositionPath= string("/uio/hume/student-u69/pederbh/FYS4150/Project3/PlanetPosition") + type + "Results.txt";
     ofstream myPlanetPositionFile;
     myPlanetPositionFile.open(planetPositionPath,std::ios::app);
 
-    string planetEnergiesPath= string("/Users/monaanderssen/Documents/FYS3150/FYS4150/Project3/PlanetEnergies") + type + "Results.txt";
+    string planetEnergiesPath= string("/uio/hume/student-u69/pederbh/FYS4150/Project3/PlanetEnergies") + type + "Results.txt";
     ofstream myPlanetEnergiesFile;
     myPlanetEnergiesFile.open(planetEnergiesPath,std::ios::app);
 
@@ -652,7 +651,7 @@ void solver::writeToFile(string type, planet current, double time, int integrati
 
 void solver::writeMercuryToFile(double mercuryDistance, planet &Sun, planet &Mercury, double time, int integrationPoints) {
 
-    string mercuryPositionPath= string("/Users/monaanderssen/Documents/FYS3150/FYS4150/Project3/MercuryPositionResults.txt");
+    string mercuryPositionPath= string("/uio/hume/student-u69/pederbh/FYS4150/Project3/MercuryPositionResults.txt");
 
     if (! myMercuryPositionFile.is_open()) {
         myMercuryPositionFile.open(mercuryPositionPath,std::ios::out);

@@ -16,11 +16,11 @@ potentialEnergy = np.zeros((numberOfIterations/100+1, numberOfPlanets))
 totalEnergy = np.zeros((numberOfIterations/100+1, numberOfPlanets))
 angularMomentum = np.zeros((numberOfIterations/100+1, numberOfPlanets))
 """
-t = np.zeros((numberOfIterations/100, numberOfPlanets))
-kineticEnergy = np.zeros((numberOfIterations/100, numberOfPlanets))
-potentialEnergy = np.zeros((numberOfIterations/100, numberOfPlanets))
-totalEnergy = np.zeros((numberOfIterations/100, numberOfPlanets))
-angularMomentum = np.zeros((numberOfIterations/100, numberOfPlanets))
+t = np.zeros(((numberOfIterations+1), numberOfPlanets))
+kineticEnergy = np.zeros(((numberOfIterations+1), numberOfPlanets))
+potentialEnergy = np.zeros(((numberOfIterations+1), numberOfPlanets))
+totalEnergy = np.zeros(((numberOfIterations+1), numberOfPlanets))
+angularMomentum = np.zeros(((numberOfIterations+1), numberOfPlanets))
 
 
 
@@ -48,11 +48,13 @@ for line in file:
 plt.plot(t[:, 1], kineticEnergy[:,1], 'b', t[:,1], potentialEnergy[:,1], 'r', t[:,1], totalEnergy[:,1], 'g', t[:,1], angularMomentum[:,1], 'y')
 #plt.plot(t[:, 0], kineticEnergy[:,0], 'b', t[:,0], potentialEnergy[:,0], 'r', t[:,0], totalEnergy[:,0], 'g', t[:,0], angularMomentum[:,0], 'y')
 #plt.title('Energy of the Earth: n=%s' % n, fontsize = 22)
-plt.xlabel('Time', fontsize = 22)
-plt.ylabel('Energy', fontsize = 22)
+plt.xlabel('Time [year]', fontsize = 20)
+plt.ylabel('Energy [solar mass*AU^2/year^2]', fontsize = 20)
+plt.title('Conservation of Energy', fontsize = 22)
+plt.axis([0.0, 1.1, -0.00014, 0.00009])
 pylab.xticks(fontsize=16)
 pylab.yticks(fontsize=16)
-plt.legend(['Kinetic energy', 'Potential energy', 'Mechanical energy', 'Angular momentum'], fontsize = 16) 
+plt.legend(['Kinetic energy', 'Potential energy', 'Mechanical energy', 'Angular momentum'], fontsize = 13, loc=7) 
 plt.show()
 
 
