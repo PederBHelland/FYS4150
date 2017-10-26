@@ -43,17 +43,15 @@ public:
     void VelocityVerletMercury(int dimension, int integration_points, double final_time, double epsilon, planet &Sun, planet &Mercury);
     double **setup_matrix(int height, int width);
     void delete_matrix(double **matrix);
-    void GravitationalForce(planet &current, planet &other, double &Fx, double &Fy, double &Fz, double epsilon);
-    void GravitationalForceSunMercury(planet &current, planet &other, double &Fx, double &Fy, double &Fz, double epsilon);
+    void GravitationalForce(planet &current, planet &other, double &Fx, double &Fy, double &Fz);
+    void GravitationalForceRelativistic(planet &current, planet &other, double &Fx, double &Fy, double &Fz);
     void GravitationalForce_RK(double x_rel, double y_rel, double z_rel, double &Fx, double &Fy, double &Fz, double mass1, double mass2);
     void KineticEnergySystem();
     void PotentialEnergySystem(double epsilon);
     void Euler(int dimension, int integrationPoints, int finalTime, double epsilon);
-    double EnergyLoss();
-    bool Bound(planet OnePlanet);
     void writeInformationToFile(std::string type, int integrationPoints, int dim);
     void writeMercuryToFile(double mercuryDistance, planet &Sun, planet &Mercury, double time, int integrationPoints);
-    void writeToFile(std::string type, planet current, double time, int integrationPoints, double kineticEnergy, double potentialEnergy, double angularMomentum);
+    void writeToFile(std::string type, planet& current, double time, int integrationPoints, double kineticEnergy, double potentialEnergy, double angularMomentum);
     vec centerOfMass(int dimension);
 };
 
